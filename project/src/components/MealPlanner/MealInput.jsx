@@ -1,34 +1,13 @@
-import React, { useState } from 'react';
+import React from 'react';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { PlusCircle, Sun, Moon } from 'lucide-react';
-import { MealType } from '@/lib/scheduler/types';
 
-interface MealInputProps {
-  onAddMeal: (type: MealType, meal: string) => void;
-}
-
-export const MealInput: React.FC<MealInputProps> = ({ onAddMeal }) => {
-  const [mealType, setMealType] = useState<MealType>('lunch');
-  const [newMeal, setNewMeal] = useState('');
-
-  const handleAddMeal = () => {
-    if (newMeal.trim()) {
-      onAddMeal(mealType, newMeal.trim());
-      setNewMeal('');
-    }
-  };
-
-  const handleKeyPress = (e: React.KeyboardEvent) => {
-    if (e.key === 'Enter') {
-      handleAddMeal();
-    }
-  };
-
+const MealInput = ({ mealType, newMeal, setMealType, setNewMeal, addMeal }) => {
   return (
     <div className="flex gap-2">
-      <Select value={mealType} onValueChange={(value: MealType) => setMealType(value)}>
+      <Select value={mealType} onValueChange={setMealType}>
         <SelectTrigger className="w-32">
           <SelectValue placeholder="Meal Type" />
         </SelectTrigger>
@@ -47,16 +26,14 @@ export const MealInput: React.FC<MealInputProps> = ({ onAddMeal }) => {
           </SelectItem>
         </SelectContent>
       </Select>
-      
       <Input
         value={newMeal}
         onChange={(e) => setNewMeal(e.target.value)}
-        onKeyPress={handleKeyPress}
         placeholder="Enter a meal name"
+        onKeyPress={(e) => e.key === 'Enter' && addMeal()}
         className="flex-1"
       />
-      
-      <Button onClick={handleAddMeal} className="flex items-center gap-2">
+      <Button onClick={addMeal} className="flex items-center gap-2">
         <PlusCircle className="w-4 h-4" />
         Add Meal
       </Button>

@@ -1,39 +1,26 @@
 import React from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { Trash2, Sun, Moon } from 'lucide-react';
-import { MealType } from '@/lib/scheduler/types';
+import { Trash2, Moon } from 'lucide-react';
 
-interface MealListProps {
-  type: MealType;
-  meals: string[];
-  onRemoveMeal: (index: number, type: MealType) => void;
-}
-
-export const MealList: React.FC<MealListProps> = ({ type, meals, onRemoveMeal }) => {
-  const Icon = type === 'lunch' ? Sun : Moon;
-  const title = `${type.charAt(0).toUpperCase() + type.slice(1)} Options`;
-
+const DinnerList = ({ meals, removeMeal }) => {
   return (
     <Card>
       <CardHeader>
         <CardTitle className="text-lg flex items-center gap-2">
-          <Icon className="w-4 h-4" />
-          {title}
+          <Moon className="w-4 h-4" />
+          Dinner Options
         </CardTitle>
       </CardHeader>
       <CardContent>
         <div className="space-y-2">
           {meals.map((meal, index) => (
-            <div 
-              key={`${type}-${index}`} 
-              className="flex items-center justify-between p-2 bg-gray-100 rounded"
-            >
+            <div key={index} className="flex items-center justify-between p-2 bg-gray-100 rounded">
               <span>{meal}</span>
               <Button
                 variant="ghost"
                 size="sm"
-                onClick={() => onRemoveMeal(index, type)}
+                onClick={() => removeMeal(index, 'dinner')}
                 className="text-red-500 hover:text-red-700"
               >
                 <Trash2 className="w-4 h-4" />
@@ -46,4 +33,4 @@ export const MealList: React.FC<MealListProps> = ({ type, meals, onRemoveMeal })
   );
 };
 
-export default MealList;
+export default DinnerList;

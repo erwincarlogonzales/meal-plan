@@ -1,86 +1,58 @@
-import { Meals, WeekMeals, Schedule } from './types';
-
-/**
- * Generates a week's worth of meals while avoiding recent duplicates
- * @param availableMeals Array of all possible meals
- * @param recentMeals Array of recently used meals to avoid repetition
- * @returns Array of meals for the week
- */
-const generateMealsForWeek = (
-  availableMeals: string[],
-  recentMeals: string[]
-): string[] => {
-  const weekMeals: string[] = [];
-  const mealPool = [...availableMeals];
-
-  for (let day = 0; day < 7; day++) {
-    // Filter out recently used meals to avoid repetition
-    const validMeals = mealPool.filter(meal => !recentMeals.includes(meal));
-    
-    // Select a meal - either from valid meals or from all meals if no valid options
-    const selectedMeal = validMeals.length > 0
-      ? validMeals[Math.floor(Math.random() * validMeals.length)]
-      : mealPool[Math.floor(Math.random() * mealPool.length)];
-
-    // Add selected meal to week's plan and update tracking arrays
-    weekMeals.push(selectedMeal);
-    mealPool.splice(mealPool.indexOf(selectedMeal), 1);
-    
-    // Track recent meals (keep last 14 days)
-    recentMeals.push(selectedMeal);
-    if (recentMeals.length > 14) recentMeals.shift();
+// lib/scheduler/mealScheduler.js
+export const generateSchedule = (meals, weeks) => {
+  if (meals.lunch.length < 7 || meals.dinner.length < 7) {
+    alert('Please add at least 7 meals for both lunch and dinner to generate a schedule');
+    return null;
   }
 
-  return weekMeals;
-};
+  const schedule = [];
+  const recentLunches = [];
+  const recentDinners = [];
 
-/**
- * Validates meal inputs before schedule generation
- * @param meals Object containing lunch and dinner arrays
- * @returns boolean indicating if meals are valid
- */
-export const validateMeals = (meals: Meals): boolean => {
-  return meals.lunch.length >= 7 && meals.dinner.length >= 7;
-};
-
-/**
- * Generates a complete meal schedule for the specified number of weeks
- * @param meals Object containing arrays of lunch and dinner options
- * @param weekCount Number of weeks to generate schedule for
- * @returns Schedule object containing weekly meal plans
- */
-export const generateMealSchedule = (meals: Meals, weekCount: number): Schedule => {
-  // Validate inputs
-  if (!validateMeals(meals)) {
-    throw new Error('Insufficient meals: Need at least 7 options for both lunch and dinner');
-  }
-
-  const schedule: WeekMeals[] = [];
-  const recentLunches: string[] = [];
-  const recentDinners: string[] = [];
-
-  // Generate schedule week by week
-  for (let week = 0; week < weekCount; week++) {
-    const weekMeals: WeekMeals = {
-      lunch: generateMealsForWeek([...meals.lunch], recentLunches),
-      dinner: generateMealsForWeek([...meals.dinner], recentDinners)
+  for (let week = 0; week < weeks; week++) {
+    const weekMeals = {
+      lunch: [],
+      dinner: [],
     };
+
+    const availableLunches = [...meals.lunch];
+    const availableDinners = [...meals.dinner];
+
+    for (let day = 0; day < 7; day++) {
+      // Handle lunch
+      const validLunches = availableLunches.filter((meal) => !recentLunches.includes(meal));
+      let lunchMeal;
+      if (validLunches.length === 0) {
+        const randomIndex = Math.floor(Math.random() * availableLunches.length);
+        lunchMeal = availableLunches[randomIndex];
+        availableLunches.splice(randomIndex, 1);
+      } else {
+        const randomIndex = Math.floor(Math.random() * validLunches.length);
+        lunchMeal = validLunches[randomIndex];
+        availableLunches.splice(availableLunches.indexOf(lunchMeal), 1);
+      }
+      weekMeals.lunch.push(lunchMeal);
+      recentLunches.push(lunchMeal);
+      if (recentLunches.length > 14) recentLunches.shift();
+
+      // Handle dinner
+      const validDinners = availableDinners.filter((meal) => !recentDinners.includes(meal));
+      let dinnerMeal;
+      if (validDinners.length === 0) {
+        const randomIndex = Math.floor(Math.random() * availableDinners.length);
+        dinnerMeal = availableDinners[randomIndex];
+        availableDinners.splice(randomIndex, 1);
+      } else {
+        const randomIndex = Math.floor(Math.random() * validDinners.length);
+        dinnerMeal = validDinners[randomIndex];
+        availableDinners.splice(availableDinners.indexOf(dinnerMeal), 1);
+      }
+      weekMeals.dinner.push(dinnerMeal);
+      recentDinners.push(dinnerMeal);
+      if (recentDinners.length > 14) recentDinners.shift();
+    }
     schedule.push(weekMeals);
   }
 
-  return { weeks: schedule };
-};
-
-/**
- * Shuffles an array of meals randomly
- * @param meals Array of meal names to shuffle
- * @returns New array with meals in random order
- */
-export const shuffleMeals = (meals: string[]): string[] => {
-  const shuffled = [...meals];
-  for (let i = shuffled.length - 1; i > 0; i--) {
-    const j = Math.floor(Math.random() * (i + 1));
-    [shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]];
-  }
-  return shuffled;
+  return schedule;
 };
