@@ -1,4 +1,4 @@
-import React, { useState, useRef } from 'react';
+import React, { useState } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -91,7 +91,7 @@ const MealPlanner = () => {
     return days[index];
   };
 
-  const downloadSchedulePDF = () => {
+  const downloadSchedule = () => {
     if (!schedule) return;
 
     const content = `
@@ -173,14 +173,6 @@ const MealPlanner = () => {
     document.body.removeChild(a);
     URL.revokeObjectURL(url);
   };
-
-  return (
-    <div className="max-w-4xl mx-auto p-6 space-y-6">
-      {/* ... (unchanged) */}
-    </div>
-  );
-};
-
 
   return (
     <div className="max-w-4xl mx-auto p-6 space-y-6">
