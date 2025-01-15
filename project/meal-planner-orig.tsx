@@ -91,7 +91,7 @@ const MealPlanner = () => {
     return days[index];
   };
 
-  const downloadSchedulePDF = () => {
+  const downloadSchedule = () => {
     if (!schedule) return;
 
     const content = `
@@ -118,14 +118,24 @@ const MealPlanner = () => {
               margin-bottom: 15px;
               color: #444;
             }
-            table {
-              width: 100%;
-              border-collapse: collapse;
+            .day {
+              margin-bottom: 20px;
             }
-            th, td {
+            .day-title {
+              font-size: 18px;
+              margin-bottom: 10px;
+              color: #666;
+            }
+            .meal {
               padding: 10px;
-              text-align: left;
-              border-bottom: 1px solid #ddd;
+              margin-bottom: 5px;
+              border-radius: 4px;
+            }
+            .lunch {
+              background-color: #e6f3ff;
+            }
+            .dinner {
+              background-color: #f5e6ff;
             }
             @media print {
               .week {
@@ -139,24 +149,17 @@ const MealPlanner = () => {
           ${schedule.map((week, weekIndex) => `
             <div class="week">
               <h2 class="week-title">Week ${weekIndex + 1}</h2>
-              <table>
-                <thead>
-                  <tr>
-                    <th>Day</th>
-                    <th>Lunch</th>
-                    <th>Dinner</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  ${week.lunch.map((_, dayIndex) => `
-                    <tr>
-                      <td>${getDayName(dayIndex)}</td>
-                      <td>${week.lunch[dayIndex]}</td>
-                      <td>${week.dinner[dayIndex]}</td>
-                    </tr>
-                  `).join('')}
-                </tbody>
-              </table>
+              ${week.lunch.map((_, dayIndex) => `
+                <div class="day">
+                  <h3 class="day-title">${getDayName(dayIndex)}</h3>
+                  <div class="meal lunch">
+                    <strong>Lunch:</strong> ${week.lunch[dayIndex]}
+                  </div>
+                  <div class="meal dinner">
+                    <strong>Dinner:</strong> ${week.dinner[dayIndex]}
+                  </div>
+                </div>
+              `).join('')}
             </div>
           `).join('')}
         </body>
@@ -173,14 +176,6 @@ const MealPlanner = () => {
     document.body.removeChild(a);
     URL.revokeObjectURL(url);
   };
-
-  return (
-    <div className="max-w-4xl mx-auto p-6 space-y-6">
-      {/* ... (unchanged) */}
-    </div>
-  );
-};
-
 
   return (
     <div className="max-w-4xl mx-auto p-6 space-y-6">
